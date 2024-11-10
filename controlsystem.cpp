@@ -12,7 +12,6 @@ void ControlSystem::addElevator(Elevator *e){
 }
 
 void ControlSystem::receiveFloorSignal(int floor){
-    display("ECS Received signal for floor " + QString::number(floor));
     Elevator * closest = computeClosestElevator(floor);
     QObject::disconnect(this, &ControlSystem::sendSignalToElevator, nullptr, nullptr);
     QObject::connect(this, &ControlSystem::sendSignalToElevator, closest, &Elevator::receiveECSSignal);

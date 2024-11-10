@@ -8,7 +8,6 @@ class ControlSystem : public QObject{
     Q_OBJECT
 private:
     std::vector<Elevator*> elevators;
-    int maxFloors = 5;
 
 public:
     ControlSystem(QObject *parent = nullptr);
@@ -23,7 +22,7 @@ public slots:
 signals:
     void sendSignalToElevator(int floor);
     void display(const QString &message); //displays to ui
-    void displayState();
+    void displayState(const QString &message);
 };
 
 #endif // CONTROLSYSTEM_H

@@ -11,7 +11,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow), f1(1), f2(2), f3(3), f4(4), f5(5),
-    e1(1, 1), e2(2, 5)
+    e1(1, 1), e2(2, 3)
 {
     ui->setupUi(this);
     //connecting floors and ecs
@@ -75,8 +75,6 @@ MainWindow::MainWindow(QWidget *parent)
     //start button
     QObject::connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::startProgram);
 
-    QObject::connect(ui->openDoor, &QPushButton::clicked, &ecs.closestElevator, &Elevator::toggleDoor);
-
 
     ecs.addElevator(&e1);
     ecs.addElevator(&e2);
@@ -134,6 +132,8 @@ void MainWindow::startProgram() {
     ui->label_4->show();
     ui->label_5->show();
 
+    ui->openDoor->show();
+    ui->closeDoor->show();
     // Show the HELP button
     ui->HELP->show();
 
@@ -173,6 +173,9 @@ void MainWindow::hideAllWidgets() {
     ui->label_3->hide();
     ui->label_4->hide();
     ui->label_5->hide();
+
+    ui->openDoor->hide();
+    ui->closeDoor->hide();
 
     // Hide the HELP button
     ui->HELP->hide();

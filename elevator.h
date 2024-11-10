@@ -9,14 +9,17 @@ class Elevator : public QObject {
     Q_OBJECT
 private:
     int id;
-    int weight;
     int currentFloor;
     bool isOpen;
     QList<int> targetFloors;
-    bool isPaused;
+    int count = 0;
+    bool detectIssue(int weight, bool fire, bool powerOut, bool doorBlocked);
+    bool fire = false;
+
 
 public:
     Elevator(int id, int currFloor, QObject *parent = nullptr);
+    int weight;
     bool helpCalled;
     int getCurrFloor();
     int getId();
@@ -24,10 +27,10 @@ public:
     void move();
     void moveToNextFloor();
     void pressButton(int n);
-    void toggleDoor();
-    void continueMoving();
+    void toggleDoor(bool obstacle = false);
     void openDoor();
     void closeDoor();
+
 
 
 

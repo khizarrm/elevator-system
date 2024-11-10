@@ -1,31 +1,32 @@
 #include "elevator.h"
 #include <QDebug>
 #include <QString>
+#include <QThread>
 
-Elevator::Elevator(int id, int f, QObject * parent) : id(id), currentFloor(f), QObject(parent), state("Idle"), helpCalled(false), isPaused(false), isOpen(false) {
+Elevator::Elevator(int id, int f, QObject * parent) : id(id), currentFloor(f), QObject(parent), weight(100), state("Idle"), helpCalled(false), isOpen(false) {
 }
 
 void Elevator::move() {
 
-    if (isOpen) {
-        toggleDoor();
+    //for testing the safety scenarios, each of these was specified
+    if (detectIssue(100, false, false, false)) {
+        display("Elevator is stopped due to an issue.");
+        return;
     }
 
-
     state = "Moving";
-        if (!targetFloors.isEmpty()) {
-        if (state != "Idle"){
-            moveToNextFloor();
-        }
-        } else {
-            state = "Idle";
-            display("Elevator has reached floor: " + QString::number(currentFloor));
-            toggleDoor();
-        }
-
+    if (!targetFloors.isEmpty()) {
+        moveToNextFloor();
+    } else {
+        state = "Idle";
+        display("Elevator has reached floor: " + QString::number(currentFloor));
+        toggleDoor();
+    }
 }
 
+
 void Elevator::moveToNextFloor() {
+
     if (targetFloors.isEmpty()) {
         state = "Idle";
         display("Elevator has reached floor: " + QString::number(currentFloor));
@@ -46,7 +47,7 @@ void Elevator::moveToNextFloor() {
         targetFloors.removeOne(floor);
     }
 
-    QTimer::singleShot(1000, this, &Elevator::moveToNextFloor);
+    QTimer::singleShot(2000, this, &Elevator::moveToNextFloor);
 }
 
 
@@ -123,3 +124,31 @@ void Elevator::callForHelp() {
     timer->start(1000);  // Start the countdown with 1-second intervals
 }
 
+bool Elevator::detectIssue(int weight, bool fire, bool powerOut, bool doorBlocked) {
+    if (weight > 1000) {
+        display("Elevator overload! Please reduce weight");
+        return true;
+    }
+
+    if (fire) {
+        display("Fire detected. Stopping at the current floor and opening doors.");
+        state = "Idle";
+        if (!isOpen) {
+            toggleDoor();  // Open the door immediately
+        }
+        return true;
+    }
+
+    if (powerOut) {
+        display("Power outage detected! Sopping at safe floor. Passengers please disembark");
+        return true;
+    }
+
+    if (doorBlocked) {
+        display("Door is blocked!");
+        return true;
+    }
+
+    // No issues detected
+    return false;
+}

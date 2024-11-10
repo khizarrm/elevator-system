@@ -18,7 +18,7 @@ public slots:
 signals:
     void sendSignal(int f);
     void display(const QString &message); //displays to ui
-    void displayState(const QString &message);
+
 
 };
 

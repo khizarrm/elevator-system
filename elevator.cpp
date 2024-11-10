@@ -7,13 +7,10 @@ Elevator::Elevator(int id, int f, QObject * parent) : id(id), currentFloor(f), Q
 }
 
 void Elevator::move() {
-
-    //for testing the safety scenarios, each of these was specified
     if (detectIssue(100, false, false, false)) {
         display("Elevator is stopped due to an issue.");
         return;
     }
-
     state = "Moving";
     if (!targetFloors.isEmpty()) {
         moveToNextFloor();
@@ -24,32 +21,25 @@ void Elevator::move() {
     }
 }
 
-
 void Elevator::moveToNextFloor() {
-
     if (targetFloors.isEmpty()) {
         state = "Idle";
         display("Elevator has reached floor: " + QString::number(currentFloor));
         toggleDoor();
         return;
     }
-
     int floor = targetFloors.first();
     if (currentFloor < floor) {
-        currentFloor++;  // Move up
+        currentFloor++;  
     } else if (currentFloor > floor) {
-        currentFloor--;  // Move down
+        currentFloor--;  
     }
-
     display("Elevator " + QString::number(id) + " currently at floor: " + QString::number(currentFloor));
-
     if (currentFloor == floor) {
         targetFloors.removeOne(floor);
     }
-
     QTimer::singleShot(2000, this, &Elevator::moveToNextFloor);
 }
-
 
 void Elevator::receiveECSSignal(int floor){
     qDebug() << "Signal received";
@@ -105,10 +95,7 @@ void Elevator::pressButton(int n){
 void Elevator::callForHelp() {
     state = "Idle";
     display("Calling emergency services...");
-
     int countdown = 5;
-
-    // Countdown timer
     QTimer *timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, [this, countdown, timer]() mutable {
         if (countdown > 0) {
@@ -117,11 +104,10 @@ void Elevator::callForHelp() {
         } else {
             timer->stop();
             display("Connected to 911");
-            move();  // Continue moving if there are target floors
+            move();
         }
     });
-
-    timer->start(1000);  // Start the countdown with 1-second intervals
+    timer->start(1000);
 }
 
 bool Elevator::detectIssue(int weight, bool fire, bool powerOut, bool doorBlocked) {
@@ -129,26 +115,21 @@ bool Elevator::detectIssue(int weight, bool fire, bool powerOut, bool doorBlocke
         display("Elevator overload! Please reduce weight");
         return true;
     }
-
     if (fire) {
         display("Fire detected. Stopping at the current floor and opening doors.");
         state = "Idle";
         if (!isOpen) {
-            toggleDoor();  // Open the door immediately
+            toggleDoor();
         }
         return true;
     }
-
     if (powerOut) {
         display("Power outage detected! Sopping at safe floor. Passengers please disembark");
         return true;
     }
-
     if (doorBlocked) {
         display("Door is blocked!");
         return true;
     }
-
-    // No issues detected
     return false;
 }
